@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="period">
+          <label>Period</label>
+          <div class="selects">
+            <select>
+              <option>April</option>
+            </select>
+            <select>
+              <option>2026</option>
+            </select>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <button class="menu-btn active">Projects</button>
+          <button class="menu-btn">Employees</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="screen projects-screen">
+          <div class="header">
+            <h1>Projects <span>April 2026</span></h1>
+            <button class="add-btn">+ Add Project</button>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company Name</th>
+                  <th>Project Name</th>
+                  <th>Budget</th>
+                  <th>Employee Capacity</th>
+                  <th>Estimated Income</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="empty">
+                  <td colspan="6">No projects found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="total">
+            <span>Total Estimated Income</span>
+            <span class="money">$0.00</span>
+          </div>
+        </section>
+
+        <section class="screen employees-screen hidden">
+          <div class="header">
+            <h1>Employees <span>April 2026</span></h1>
+            <button class="add-btn">+ Add Employee</button>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Surname</th>
+                  <th>Age</th>
+                  <th>Position</th>
+                  <th>Salary</th>
+                  <th>Estimated Payment</th>
+                  <th>Project</th>
+                  <th>Projected Income</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="empty">
+                  <td colspan="9">No employees found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
