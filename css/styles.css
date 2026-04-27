@@ -17,7 +17,7 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-  width: 240px;
+  width: 290px;
   height: 100%;
   background: #111827;
   padding: 20px 10px 20px 20px;
@@ -68,7 +68,7 @@ option {
 }
 
 .sidebar.hide {
-  transform: translateX(-200px);
+  transform: translateX(-250px);
   position: absolute;
 }
 
