@@ -6,7 +6,7 @@
 }
 
 body {
-  background: #0f172a;
+  background: #0a0f1a;
   color: #cbd5f5;
 }
 
@@ -41,12 +41,20 @@ body {
 
 select {
   width: 100%;
-  padding: 6px;
+  padding: 10px;
 
   background: #1f2937;
   border: none;
   color: #fff;
   border-radius: 6px;
+
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  color: #fff;
+}
+
+option {
+  background: #1f2937;
 }
 
 .sidebar-header {
@@ -187,4 +195,128 @@ tbody tr {
 
 .money {
   color: #22c55e;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* PANEL */
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  background: #111827;
+  border-left: 1px solid #1f2937;
+  padding: 20px;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-panel.active {
+  transform: translateX(0);
+}
+
+/* HEADER */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* FORM */
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  font-size: 13px;
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  background: #1f2937;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  color: #fff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* ERROR */
+.error {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ACTIONS */
+.panel-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #1f2937;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: #cbd5f5;
+  cursor: pointer;
+}
+
+.submit-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* CALENDAR ICON */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }

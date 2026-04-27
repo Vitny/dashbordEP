@@ -14,7 +14,7 @@
           <div class="sidebar-header">
             <label>Period</label>
             <button class="panel-button">
-              <img src="assets/panel-button.png" alt="" />
+              <img src="assets/panel-button.png" alt="side panel button" />
             </button>
           </div>
           <div class="selects">
@@ -50,7 +50,7 @@
         <section class="screen projects-screen">
           <div class="header">
             <h1>Projects <span>April 2026</span></h1>
-            <button class="add-btn">+ Add Project</button>
+            <button class="add-btn projects">+ Add Project</button>
           </div>
 
           <div class="table-wrapper">
@@ -82,7 +82,7 @@
         <section class="screen employees-screen hidden">
           <div class="header">
             <h1>Employees <span>April 2026</span></h1>
-            <button class="add-btn">+ Add Employee</button>
+            <button class="add-btn employees">+ Add Employee</button>
           </div>
 
           <div class="table-wrapper">
@@ -110,7 +110,113 @@
         </section>
       </main>
     </div>
+    <!-- overlay -->
+    <div class="overlay" id="overlay"></div>
 
+    <!-- add project -->
+    <div class="side-panel" id="projectPanel">
+      <div class="panel-header">
+        <h2>Add New Project</h2>
+        <button class="close-btn" id="closePanel">×</button>
+      </div>
+
+      <form id="projectForm" novalidate>
+        <div class="form-group">
+          <label>Project Name *</label>
+          <input type="text" id="projectName" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Company Name *</label>
+          <input type="text" id="companyName" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Budget *</label>
+          <input type="number" step="0.01" id="budget" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Employee Capacity *</label>
+          <input type="number" id="capacity" />
+          <span class="error"></span>
+        </div>
+
+        <div class="panel-actions">
+          <button type="button" class="cancel-btn" id="cancelBtn">
+            Cancel
+          </button>
+          <button type="submit" class="submit-btn" id="submitBtn" disabled>
+            Add Project
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- add employee -->
+    <div class="side-panel" id="employeePanel">
+      <div class="panel-header">
+        <h2>Add New Employee</h2>
+        <button class="close-btn" id="closeEmployeePanel">×</button>
+      </div>
+
+      <form id="employeeForm" novalidate>
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" id="empName" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Surname *</label>
+          <input type="text" id="empSurname" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Date of Birth *</label>
+          <input type="date" id="empDob" />
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Position *</label>
+          <select id="empPosition">
+            <option value="">Select position</option>
+            <option>Junior</option>
+            <option>Middle</option>
+            <option>Senior</option>
+            <option>Lead</option>
+            <option>Architect</option>
+            <option>BO</option>
+          </select>
+          <span class="error"></span>
+        </div>
+
+        <div class="form-group">
+          <label>Salary *</label>
+          <input type="number" step="0.01" id="empSalary" />
+          <span class="error"></span>
+        </div>
+
+        <div class="panel-actions">
+          <button type="button" class="cancel-btn" id="cancelEmployeeBtn">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="submit-btn"
+            id="submitEmployeeBtn"
+            disabled
+          >
+            Add Employee
+          </button>
+        </div>
+      </form>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
