@@ -38,6 +38,43 @@ projectsButton.addEventListener('click', () => {
 document.getElementById('month').value = '3'
 document.getElementById('year').value = '2026'
 
+//date update
+const monthSelect = document.getElementById('month')
+const yearSelect = document.getElementById('year')
+
+const title1 = document.getElementById('date-output-projects')
+const title2 = document.getElementById('date-output-employees')
+
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+function updateDate() {
+  const monthIndex = Number(monthSelect.value)
+  const year = yearSelect.value
+
+  const text = `${months[monthIndex]} ${year}`
+
+  title1.textContent = text
+  title2.textContent = text
+}
+
+monthSelect.addEventListener('change', updateDate)
+yearSelect.addEventListener('change', updateDate)
+
+updateDate()
+
 // OVERLAY PROJECT
 const panel = document.getElementById('projectPanel')
 const overlay = document.getElementById('overlay')
