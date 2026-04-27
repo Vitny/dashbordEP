@@ -17,11 +17,12 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-  width: 220px;
+  width: 240px;
   height: 100%;
   background: #111827;
-  padding: 20px;
+  padding: 20px 10px 20px 20px;
   border-right: 1px solid #1f2937;
+  transition: transform 0.3s ease;
 }
 
 .period label {
@@ -32,22 +33,41 @@ body {
 }
 
 .selects {
+  margin-top: 16px;
   display: flex;
   gap: 10px;
+  padding-right: 30px;
 }
 
 select {
   width: 100%;
   padding: 6px;
+
   background: #1f2937;
   border: none;
   color: #fff;
   border-radius: 6px;
 }
 
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.panel-button {
+  width: 20px;
+  right: 0;
+}
+
+.sidebar.hide {
+  transform: translateX(-200px);
+  position: absolute;
+}
+
 /* MENU */
 .menu {
   margin-top: 30px;
+  padding-right: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -70,10 +90,13 @@ select {
 /* MAIN */
 .main {
   flex: 1;
-  padding: 20px;
+  margin: 20px;
   position: relative;
 }
 
+.main.shrink {
+  margin-left: 60px;
+}
 /* SCREENS */
 .screen {
   position: absolute;
