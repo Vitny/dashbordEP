@@ -100,6 +100,7 @@ overlay.onclick = closePanel
 // validation
 const form = document.getElementById('projectForm')
 const submitBtn = document.getElementById('submitBtn')
+submitBtn.onclick = closePanel
 
 const fields = {
   projectName: {
@@ -181,6 +182,7 @@ overlay.onclick = () => {
 // validation
 const empForm = document.getElementById('employeeForm')
 const empSubmit = document.getElementById('submitEmployeeBtn')
+empSubmit.onclick = closeEmployeePanel
 
 const empFields = {
   name: {
@@ -241,3 +243,142 @@ Object.values(empFields).forEach((field) => {
 })
 
 empForm.addEventListener('submit', (e) => e.preventDefault())
+
+// GET DATA FROM USER
+
+const data = {
+  monthlyData: {},
+}
+
+let currentPeriod = '2026-3'
+
+function getPeriodKey(year, monthIndex) {
+  return `${year}-${monthIndex}`
+}
+
+//create month
+function ensurePeriodExists() {
+  if (!data.monthlyData[currentPeriod]) {
+    data.monthlyData[currentPeriod] = {
+      projects: [],
+      employees: [],
+    }
+  }
+}
+
+// add project
+document.getElementById('projectForm').addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  ensurePeriodExists()
+
+  const newProject = {
+    companyName: companyName.value,
+    projectName: projectName.value,
+    budget: Number(budget.value),
+    capacity: Number(capacity.value),
+  }
+
+  data.monthlyData[currentPeriod].projects.push(newProject)
+
+  renderProjects()
+})
+
+// render project
+const projectsTbody = document.querySelector('.projects tbody')
+
+function renderProjects() {
+  const period = data.monthlyData[currentPeriod]
+
+  projectsTbody.innerHTML = ''
+
+  if (!period || period.projects.length === 0) {
+    projectsTbody.innerHTML = `
+      <tr class="empty">
+        <td colspan="6">No projects found</td>
+      </tr>
+    `
+    return
+  }
+
+  period.projects.forEach((p) => {
+    const row = document.createElement('tr')
+
+    row.innerHTML = `
+      <td>${p.companyName}</td>
+      <td>${p.projectName}</td>
+      <td>$${p.budget}</td>
+      <td>${p.capacity}</td>
+      <td>$0</td>
+      <td>...</td>
+    `
+
+    projectsTbody.appendChild(row)
+  })
+}
+
+// add employee
+document.getElementById('employeeForm').addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  ensurePeriodExists()
+
+  const dob = new Date(empDob.value)
+  const age = new Date().getFullYear() - dob.getFullYear()
+
+  const newEmployee = {
+    name: empName.value,
+    surname: empSurname.value,
+    age,
+    position: empPosition.value,
+    salary: Number(empSalary.value),
+  }
+
+  data.monthlyData[currentPeriod].employees.push(newEmployee)
+
+  renderEmployees()
+})
+
+// render employee
+const employeesTbody = document.querySelector('.employees tbody')
+
+function renderEmployees() {
+  const period = data.monthlyData[currentPeriod]
+
+  employeesTbody.innerHTML = ''
+
+  if (!period || period.employees.length === 0) {
+    employeesTbody.innerHTML = `
+      <tr class="empty">
+        <td colspan="9">No employees found</td>
+      </tr>
+    `
+    return
+  }
+
+  period.employees.forEach((e) => {
+    const row = document.createElement('tr')
+
+    row.innerHTML = `
+      <td>${e.name}</td>
+      <td>${e.surname}</td>
+      <td>${e.age}</td>
+      <td>${e.position}</td>
+      <td>$${e.salary}</td>
+      <td>$0</td>
+      <td>-</td>
+      <td>$0</td>
+      <td>...</td>
+    `
+
+    employeesTbody.appendChild(row)
+  })
+}
+
+//month change
+function changePeriod(year, monthIndex) {
+  currentPeriod = `${year}-${monthIndex}`
+
+  renderProjects()
+  renderEmployees()
+}
