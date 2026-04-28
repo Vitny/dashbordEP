@@ -157,7 +157,7 @@ form.addEventListener('submit', (e) => {
 // OVERLAY EMPLOYEE
 const empPanel = document.getElementById('employeePanel')
 
-const openEmpBtn = document.querySelectorAll('.add-btn.employees')
+const openEmpBtn = document.querySelector('.add-btn.employees')
 const closeEmpBtn = document.getElementById('closeEmployeePanel')
 const cancelEmpBtn = document.getElementById('cancelEmployeeBtn')
 
