@@ -298,10 +298,11 @@ function renderProjects() {
         <td colspan="6">No projects found</td>
       </tr>
     `
+    updateTotalIncome()
     return
   }
 
-  period.projects.forEach((p) => {
+  period.projects.forEach((p, index) => {
     const row = document.createElement('tr')
 
     row.innerHTML = `
@@ -310,11 +311,15 @@ function renderProjects() {
       <td>$${p.budget}</td>
       <td>${p.capacity}</td>
       <td>$0</td>
-      <td>...</td>
+      <td>
+        <button class="action-btn delete-btn" data-index="${index}" data-type="project">Delete</button>
+      </td>
     `
 
     projectsTbody.appendChild(row)
   })
+
+  updateTotalIncome()
 }
 
 // add employee
@@ -356,19 +361,39 @@ function renderEmployees() {
     return
   }
 
-  period.employees.forEach((e) => {
+  const positions = ['Junior', 'Middle', 'Senior', 'Lead', 'Architect', 'BO']
+
+  period.employees.forEach((e, index) => {
     const row = document.createElement('tr')
+
+    const positionOptions = positions
+      .map(pos => `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`)
+      .join('')
 
     row.innerHTML = `
       <td>${e.name}</td>
       <td>${e.surname}</td>
       <td>${e.age}</td>
-      <td>${e.position}</td>
-      <td>$${e.salary}</td>
+      <td class="editable-cell" data-field="position" data-index="${index}">
+        <span class="cell-view">${e.position}</span>
+        <span class="cell-edit hidden">
+          <select class="inline-select">${positionOptions}</select>
+          <button class="ok-btn">OK</button>
+        </span>
+      </td>
+      <td class="editable-cell" data-field="salary" data-index="${index}">
+        <span class="cell-view">$${e.salary}</span>
+        <span class="cell-edit hidden">
+          <input type="number" step="0.01" class="inline-input" value="${e.salary}" min="0.01" />
+          <button class="ok-btn">OK</button>
+        </span>
+      </td>
       <td>$0</td>
       <td>-</td>
       <td>$0</td>
-      <td>...</td>
+      <td>
+        <button class="action-btn delete-btn" data-index="${index}" data-type="employee">Delete</button>
+      </td>
     `
 
     employeesTbody.appendChild(row)
@@ -382,3 +407,69 @@ function changePeriod(year, monthIndex) {
   renderProjects()
   renderEmployees()
 }
+
+// TOTAL INCOME
+function updateTotalIncome() {
+  const totalEl = document.querySelector('.total .money')
+  if (!totalEl) return
+  totalEl.textContent = '$0.00'
+}
+
+// DELETE + INLINE EDIT
+document.querySelector('.table-wrapper.projects').addEventListener('click', (e) => {
+  const btn = e.target.closest('.delete-btn')
+  if (!btn || btn.dataset.type !== 'project') return
+
+  const index = Number(btn.dataset.index)
+  ensurePeriodExists()
+  data.monthlyData[currentPeriod].projects.splice(index, 1)
+  renderProjects()
+})
+
+document.querySelector('.table-wrapper.employees').addEventListener('click', (e) => {
+  // Delete
+  if (e.target.closest('.delete-btn')) {
+    const btn = e.target.closest('.delete-btn')
+    if (btn.dataset.type !== 'employee') return
+    const index = Number(btn.dataset.index)
+    ensurePeriodExists()
+    data.monthlyData[currentPeriod].employees.splice(index, 1)
+    renderEmployees()
+    return
+  }
+
+  // Open inline edit on cell click
+  const cell = e.target.closest('.editable-cell')
+  if (cell && !e.target.closest('.cell-edit')) {
+    const cellView = cell.querySelector('.cell-view')
+    const cellEdit = cell.querySelector('.cell-edit')
+    cellView.classList.add('hidden')
+    cellEdit.classList.remove('hidden')
+    const input = cellEdit.querySelector('input, select')
+    if (input) input.focus()
+    return
+  }
+
+  // OK button — save inline edit
+  if (e.target.closest('.ok-btn')) {
+    const cell = e.target.closest('.editable-cell')
+    const index = Number(cell.dataset.index)
+    const field = cell.dataset.field
+    const input = cell.querySelector('input, select')
+    const value = input.value.trim()
+
+    if (field === 'salary') {
+      const num = Number(value)
+      if (!value || isNaN(num) || num <= 0) {
+        input.style.borderColor = '#ef4444'
+        return
+      }
+      input.style.borderColor = ''
+      data.monthlyData[currentPeriod].employees[index].salary = num
+    } else if (field === 'position') {
+      data.monthlyData[currentPeriod].employees[index].position = value
+    }
+
+    renderEmployees()
+  }
+})

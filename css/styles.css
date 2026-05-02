@@ -320,3 +320,77 @@ input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
+
+/* ACTION BUTTONS */
+.action-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* INLINE EDIT */
+.editable-cell {
+  cursor: pointer;
+}
+
+.editable-cell .cell-view:hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  color: #a5b4fc;
+}
+
+.cell-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cell-edit.hidden,
+.cell-view.hidden {
+  display: none;
+}
+
+.inline-input {
+  width: 90px;
+  padding: 4px 8px;
+  background: #1f2937;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.inline-select {
+  padding: 4px 8px;
+  background: #1f2937;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.ok-btn {
+  padding: 4px 10px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ok-btn:hover {
+  background: #4f46e5;
+}
