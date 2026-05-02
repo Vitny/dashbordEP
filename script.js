@@ -35,8 +35,8 @@ projectsButton.addEventListener('click', () => {
 })
 
 // set default value
-document.getElementById('month').value = '3'
-document.getElementById('year').value = '2026'
+document.getElementById('month').value = now.getMonth()
+document.getElementById('year').value = now.getFullYear()
 
 //date update
 const monthSelect = document.getElementById('month')
@@ -372,7 +372,10 @@ function renderEmployees() {
   sorted.forEach((e) => {
     const originalIndex = period.employees.indexOf(e)
     const positionOptions = positions
-      .map(pos => `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`)
+      .map(
+        (pos) =>
+          `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`,
+      )
       .join('')
 
     const row = document.createElement('tr')
@@ -423,63 +426,67 @@ function updateTotalIncome() {
 }
 
 // DELETE + INLINE EDIT
-document.querySelector('.table-wrapper.projects').addEventListener('click', (e) => {
-  const btn = e.target.closest('.delete-btn')
-  if (!btn || btn.dataset.type !== 'project') return
-
-  const index = Number(btn.dataset.index)
-  ensurePeriodExists()
-  data.monthlyData[currentPeriod].projects.splice(index, 1)
-  renderProjects()
-})
-
-document.querySelector('.table-wrapper.employees').addEventListener('click', (e) => {
-  // Delete
-  if (e.target.closest('.delete-btn')) {
+document
+  .querySelector('.table-wrapper.projects')
+  .addEventListener('click', (e) => {
     const btn = e.target.closest('.delete-btn')
-    if (btn.dataset.type !== 'employee') return
+    if (!btn || btn.dataset.type !== 'project') return
+
     const index = Number(btn.dataset.index)
     ensurePeriodExists()
-    data.monthlyData[currentPeriod].employees.splice(index, 1)
-    renderEmployees()
-    return
-  }
+    data.monthlyData[currentPeriod].projects.splice(index, 1)
+    renderProjects()
+  })
 
-  // Open inline edit on cell click
-  const cell = e.target.closest('.editable-cell')
-  if (cell && !e.target.closest('.cell-edit')) {
-    const cellView = cell.querySelector('.cell-view')
-    const cellEdit = cell.querySelector('.cell-edit')
-    cellView.classList.add('hidden')
-    cellEdit.classList.remove('hidden')
-    const input = cellEdit.querySelector('input, select')
-    if (input) input.focus()
-    return
-  }
-
-  // OK button — save inline edit
-  if (e.target.closest('.ok-btn')) {
-    const cell = e.target.closest('.editable-cell')
-    const index = Number(cell.dataset.index)
-    const field = cell.dataset.field
-    const input = cell.querySelector('input, select')
-    const value = input.value.trim()
-
-    if (field === 'salary') {
-      const num = Number(value)
-      if (!value || isNaN(num) || num <= 0) {
-        input.style.borderColor = '#ef4444'
-        return
-      }
-      input.style.borderColor = ''
-      data.monthlyData[currentPeriod].employees[index].salary = num
-    } else if (field === 'position') {
-      data.monthlyData[currentPeriod].employees[index].position = value
+document
+  .querySelector('.table-wrapper.employees')
+  .addEventListener('click', (e) => {
+    // Delete
+    if (e.target.closest('.delete-btn')) {
+      const btn = e.target.closest('.delete-btn')
+      if (btn.dataset.type !== 'employee') return
+      const index = Number(btn.dataset.index)
+      ensurePeriodExists()
+      data.monthlyData[currentPeriod].employees.splice(index, 1)
+      renderEmployees()
+      return
     }
 
-    renderEmployees()
-  }
-})
+    // Open inline edit on cell click
+    const cell = e.target.closest('.editable-cell')
+    if (cell && !e.target.closest('.cell-edit')) {
+      const cellView = cell.querySelector('.cell-view')
+      const cellEdit = cell.querySelector('.cell-edit')
+      cellView.classList.add('hidden')
+      cellEdit.classList.remove('hidden')
+      const input = cellEdit.querySelector('input, select')
+      if (input) input.focus()
+      return
+    }
+
+    // OK button — save inline edit
+    if (e.target.closest('.ok-btn')) {
+      const cell = e.target.closest('.editable-cell')
+      const index = Number(cell.dataset.index)
+      const field = cell.dataset.field
+      const input = cell.querySelector('input, select')
+      const value = input.value.trim()
+
+      if (field === 'salary') {
+        const num = Number(value)
+        if (!value || isNaN(num) || num <= 0) {
+          input.style.borderColor = '#ef4444'
+          return
+        }
+        input.style.borderColor = ''
+        data.monthlyData[currentPeriod].employees[index].salary = num
+      } else if (field === 'position') {
+        data.monthlyData[currentPeriod].employees[index].position = value
+      }
+
+      renderEmployees()
+    }
+  })
 
 // SORTING
 const sortState = {
@@ -500,15 +507,17 @@ function getSortedArray(arr, field, dir) {
 // sort icons update
 function updateSortIcons(tableType) {
   const { field, dir } = sortState[tableType]
-  document.querySelectorAll(`.sort-icon[data-table="${tableType}"]`).forEach((icon) => {
-    if (icon.dataset.field === field) {
-      icon.textContent = dir === 1 ? '↑' : '↓'
-      icon.classList.add('sort-active')
-    } else {
-      icon.textContent = '⇅'
-      icon.classList.remove('sort-active')
-    }
-  })
+  document
+    .querySelectorAll(`.sort-icon[data-table="${tableType}"]`)
+    .forEach((icon) => {
+      if (icon.dataset.field === field) {
+        icon.textContent = dir === 1 ? '↑' : '↓'
+        icon.classList.add('sort-active')
+      } else {
+        icon.textContent = '⇅'
+        icon.classList.remove('sort-active')
+      }
+    })
 }
 
 // sort click
