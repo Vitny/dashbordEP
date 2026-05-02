@@ -34,7 +34,8 @@ projectsButton.addEventListener('click', () => {
   employeesButton.classList.remove('active')
 })
 
-// set default value
+// set default value to current date
+const now = new Date()
 document.getElementById('month').value = now.getMonth()
 document.getElementById('year').value = now.getFullYear()
 
@@ -257,7 +258,7 @@ const data = {
   monthlyData: {},
 }
 
-let currentPeriod = '2026-3'
+let currentPeriod = `${now.getFullYear()}-${now.getMonth()}`
 
 function getPeriodKey(year, monthIndex) {
   return `${year}-${monthIndex}`
