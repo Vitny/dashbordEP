@@ -70,8 +70,15 @@ function updateDate() {
   title2.textContent = text
 }
 
-monthSelect.addEventListener('change', updateDate)
-yearSelect.addEventListener('change', updateDate)
+monthSelect.addEventListener('change', () => {
+  updateDate()
+  changePeriod(yearSelect.value, monthSelect.value)
+})
+
+yearSelect.addEventListener('change', () => {
+  updateDate()
+  changePeriod(yearSelect.value, monthSelect.value)
+})
 
 updateDate()
 
