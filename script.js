@@ -20,24 +20,39 @@ const employeesButton = document.querySelector('.menu-btn.employees')
 const projectsScreen = document.querySelector('.projects-screen')
 const employeesScreen = document.querySelector('.employees-screen')
 
-employeesButton.addEventListener('click', () => {
-  projectsScreen.classList.add('hidden')
-  employeesScreen.classList.remove('hidden')
-  employeesButton.classList.add('active')
-  projectsButton.classList.remove('active')
-})
+function switchTab(tab) {
+  if (tab === 'employees') {
+    projectsScreen.classList.add('hidden')
+    employeesScreen.classList.remove('hidden')
+    employeesButton.classList.add('active')
+    projectsButton.classList.remove('active')
+  } else {
+    employeesScreen.classList.add('hidden')
+    projectsScreen.classList.remove('hidden')
+    projectsButton.classList.add('active')
+    employeesButton.classList.remove('active')
+  }
+  localStorage.setItem('activeTab', tab)
+}
 
-projectsButton.addEventListener('click', () => {
-  employeesScreen.classList.add('hidden')
-  projectsScreen.classList.remove('hidden')
-  projectsButton.classList.add('active')
-  employeesButton.classList.remove('active')
-})
+employeesButton.addEventListener('click', () => switchTab('employees'))
+projectsButton.addEventListener('click', () => switchTab('projects'))
 
-// set default value to current date
+// restore active tab
+const savedTab = localStorage.getItem('activeTab')
+if (savedTab) switchTab(savedTab)
+
+// restore period or use current date
 const now = new Date()
-document.getElementById('month').value = now.getMonth()
-document.getElementById('year').value = now.getFullYear()
+const savedPeriod = localStorage.getItem('selectedPeriod')
+if (savedPeriod) {
+  const [savedYear, savedMonth] = savedPeriod.split('-')
+  document.getElementById('year').value = savedYear
+  document.getElementById('month').value = savedMonth
+} else {
+  document.getElementById('month').value = now.getMonth()
+  document.getElementById('year').value = now.getFullYear()
+}
 
 //date update
 const monthSelect = document.getElementById('month')
@@ -254,11 +269,17 @@ empForm.addEventListener('submit', (e) => e.preventDefault())
 
 // GET DATA FROM USER
 
+// load from localstorage
+const stored = localStorage.getItem('monthlyData')
 const data = {
-  monthlyData: {},
+  monthlyData: stored ? JSON.parse(stored) : {},
 }
 
-let currentPeriod = `${now.getFullYear()}-${now.getMonth()}`
+function saveData() {
+  localStorage.setItem('monthlyData', JSON.stringify(data.monthlyData))
+}
+
+let currentPeriod = savedPeriod || `${now.getFullYear()}-${now.getMonth()}`
 
 function getPeriodKey(year, monthIndex) {
   return `${year}-${monthIndex}`
@@ -281,6 +302,7 @@ document.getElementById('projectForm').addEventListener('submit', (e) => {
   ensurePeriodExists()
 
   const newProject = {
+    id: crypto.randomUUID(),
     companyName: companyName.value,
     projectName: projectName.value,
     budget: Number(budget.value),
@@ -289,6 +311,7 @@ document.getElementById('projectForm').addEventListener('submit', (e) => {
 
   data.monthlyData[currentPeriod].projects.push(newProject)
 
+  saveData()
   renderProjects()
 })
 
@@ -341,15 +364,20 @@ document.getElementById('employeeForm').addEventListener('submit', (e) => {
   const age = new Date().getFullYear() - dob.getFullYear()
 
   const newEmployee = {
+    id: crypto.randomUUID(),
     name: empName.value,
     surname: empSurname.value,
+    dob: empDob.value,
     age,
     position: empPosition.value,
     salary: Number(empSalary.value),
+    assignments: {},
+    vacations: {},
   }
 
   data.monthlyData[currentPeriod].employees.push(newEmployee)
 
+  saveData()
   renderEmployees()
 })
 
@@ -414,6 +442,7 @@ function renderEmployees() {
 //month change
 function changePeriod(year, monthIndex) {
   currentPeriod = `${year}-${monthIndex}`
+  localStorage.setItem('selectedPeriod', currentPeriod)
 
   renderProjects()
   renderEmployees()
@@ -436,6 +465,7 @@ document
     const index = Number(btn.dataset.index)
     ensurePeriodExists()
     data.monthlyData[currentPeriod].projects.splice(index, 1)
+    saveData()
     renderProjects()
   })
 
@@ -449,6 +479,7 @@ document
       const index = Number(btn.dataset.index)
       ensurePeriodExists()
       data.monthlyData[currentPeriod].employees.splice(index, 1)
+      saveData()
       renderEmployees()
       return
     }
@@ -485,6 +516,7 @@ document
         data.monthlyData[currentPeriod].employees[index].position = value
       }
 
+      saveData()
       renderEmployees()
     }
   })
@@ -540,3 +572,7 @@ document.addEventListener('click', (e) => {
   if (tableType === 'projects') renderProjects()
   else renderEmployees()
 })
+
+// Initial render on page load
+renderProjects()
+renderEmployees()
