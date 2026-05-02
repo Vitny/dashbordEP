@@ -300,16 +300,17 @@ function renderProjects() {
   projectsTbody.innerHTML = ''
 
   if (!period || period.projects.length === 0) {
-    projectsTbody.innerHTML = `
-      <tr class="empty">
-        <td colspan="6">No projects found</td>
-      </tr>
-    `
+    projectsTbody.innerHTML = `<tr class="empty"><td colspan="6">No projects found</td></tr>`
     updateTotalIncome()
+    updateSortIcons('projects')
     return
   }
 
-  period.projects.forEach((p, index) => {
+  const { field, dir } = sortState.projects
+  const sorted = getSortedArray(period.projects, field, dir)
+
+  sorted.forEach((p) => {
+    const originalIndex = period.projects.indexOf(p)
     const row = document.createElement('tr')
 
     row.innerHTML = `
@@ -319,14 +320,14 @@ function renderProjects() {
       <td>${p.capacity}</td>
       <td>$0</td>
       <td>
-        <button class="action-btn delete-btn" data-index="${index}" data-type="project">Delete</button>
+        <button class="action-btn delete-btn" data-index="${originalIndex}" data-type="project">Delete</button>
       </td>
     `
-
     projectsTbody.appendChild(row)
   })
 
   updateTotalIncome()
+  updateSortIcons('projects')
 }
 
 // add employee
@@ -356,39 +357,37 @@ const employeesTbody = document.querySelector('.employees tbody')
 
 function renderEmployees() {
   const period = data.monthlyData[currentPeriod]
-
   employeesTbody.innerHTML = ''
 
   if (!period || period.employees.length === 0) {
-    employeesTbody.innerHTML = `
-      <tr class="empty">
-        <td colspan="9">No employees found</td>
-      </tr>
-    `
+    employeesTbody.innerHTML = `<tr class="empty"><td colspan="9">No employees found</td></tr>`
+    updateSortIcons('employees')
     return
   }
 
   const positions = ['Junior', 'Middle', 'Senior', 'Lead', 'Architect', 'BO']
+  const { field, dir } = sortState.employees
+  const sorted = getSortedArray(period.employees, field, dir)
 
-  period.employees.forEach((e, index) => {
-    const row = document.createElement('tr')
-
+  sorted.forEach((e) => {
+    const originalIndex = period.employees.indexOf(e)
     const positionOptions = positions
       .map(pos => `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`)
       .join('')
 
+    const row = document.createElement('tr')
     row.innerHTML = `
       <td>${e.name}</td>
       <td>${e.surname}</td>
       <td>${e.age}</td>
-      <td class="editable-cell" data-field="position" data-index="${index}">
+      <td class="editable-cell" data-field="position" data-index="${originalIndex}">
         <span class="cell-view">${e.position}</span>
         <span class="cell-edit hidden">
           <select class="inline-select">${positionOptions}</select>
           <button class="ok-btn">OK</button>
         </span>
       </td>
-      <td class="editable-cell" data-field="salary" data-index="${index}">
+      <td class="editable-cell" data-field="salary" data-index="${originalIndex}">
         <span class="cell-view">$${e.salary}</span>
         <span class="cell-edit hidden">
           <input type="number" step="0.01" class="inline-input" value="${e.salary}" min="0.01" />
@@ -399,12 +398,13 @@ function renderEmployees() {
       <td>-</td>
       <td>$0</td>
       <td>
-        <button class="action-btn delete-btn" data-index="${index}" data-type="employee">Delete</button>
+        <button class="action-btn delete-btn" data-index="${originalIndex}" data-type="employee">Delete</button>
       </td>
     `
-
     employeesTbody.appendChild(row)
   })
+
+  updateSortIcons('employees')
 }
 
 //month change
@@ -479,4 +479,54 @@ document.querySelector('.table-wrapper.employees').addEventListener('click', (e)
 
     renderEmployees()
   }
+})
+
+// SORTING
+const sortState = {
+  projects: { field: null, dir: 1 },
+  employees: { field: null, dir: 1 },
+}
+
+function getSortedArray(arr, field, dir) {
+  if (!field) return arr
+  return [...arr].sort((a, b) => {
+    const valA = a[field]
+    const valB = b[field]
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir
+    return (valA - valB) * dir
+  })
+}
+
+// sort icons update
+function updateSortIcons(tableType) {
+  const { field, dir } = sortState[tableType]
+  document.querySelectorAll(`.sort-icon[data-table="${tableType}"]`).forEach((icon) => {
+    if (icon.dataset.field === field) {
+      icon.textContent = dir === 1 ? '↑' : '↓'
+      icon.classList.add('sort-active')
+    } else {
+      icon.textContent = '⇅'
+      icon.classList.remove('sort-active')
+    }
+  })
+}
+
+// sort click
+document.addEventListener('click', (e) => {
+  const icon = e.target.closest('.sort-icon')
+  if (!icon) return
+
+  const tableType = icon.dataset.table
+  const field = icon.dataset.field
+  const state = sortState[tableType]
+
+  if (state.field === field) {
+    state.dir *= -1
+  } else {
+    state.field = field
+    state.dir = 1
+  }
+
+  if (tableType === 'projects') renderProjects()
+  else renderEmployees()
 })

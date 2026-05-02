@@ -394,3 +394,21 @@ input[type='date']::-webkit-calendar-picker-indicator {
 .ok-btn:hover {
   background: #4f46e5;
 }
+
+/* SORT ICONS */
+.sort-icon {
+  cursor: pointer;
+  margin-left: 4px;
+  color: #475569;
+  font-size: 12px;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.sort-icon:hover {
+  color: #cbd5f5;
+}
+
+.sort-icon.sort-active {
+  color: #6366f1;
+}
