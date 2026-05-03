@@ -408,6 +408,194 @@ document.getElementById('employeeForm').addEventListener('submit', (e) => {
 })
 
 // ============================================================
+// FILTERING
+// ============================================================
+const activeFilters = {
+  projects: {},
+  employees: {},
+}
+
+function applyFilter(tableType, field, value) {
+  if (value === '' || value === null) {
+    delete activeFilters[tableType][field]
+  } else {
+    activeFilters[tableType][field] = value
+  }
+  renderFilterChips(tableType)
+  if (tableType === 'projects') renderProjects()
+  else renderEmployees()
+}
+
+function clearAllFilters(tableType) {
+  activeFilters[tableType] = {}
+  renderFilterChips(tableType)
+  if (tableType === 'projects') renderProjects()
+  else renderEmployees()
+}
+
+function getFilteredArray(arr, tableType) {
+  const filters = activeFilters[tableType]
+  if (Object.keys(filters).length === 0) return arr
+  return arr.filter((item) => {
+    return Object.entries(filters).every(([field, value]) => {
+      const itemVal = String(item[field] || '').toLowerCase()
+      return itemVal.includes(value.toLowerCase())
+    })
+  })
+}
+
+function renderFilterChips(tableType) {
+  const chipsEl = document.getElementById(
+    tableType === 'projects' ? 'projectFilterChips' : 'employeeFilterChips',
+  )
+  if (!chipsEl) return
+
+  const filters = activeFilters[tableType]
+  const entries = Object.entries(filters)
+  chipsEl.innerHTML = ''
+
+  if (entries.length === 0) return
+
+  entries.forEach(([field, value]) => {
+    const label =
+      document.querySelector(
+        `.filter-icon[data-table="${tableType}"][data-field="${field}"]`,
+      )?.dataset.label || field
+    const chip = document.createElement('span')
+    chip.className = 'filter-chip'
+    chip.innerHTML = `${label}: <strong>${value}</strong> <span class="chip-remove" data-table="${tableType}" data-field="${field}">×</span>`
+    chipsEl.appendChild(chip)
+  })
+
+  if (entries.length >= 2) {
+    const clearChip = document.createElement('span')
+    clearChip.className = 'filter-chip filter-chip-clear'
+    clearChip.textContent = 'Clear Filters'
+    clearChip.addEventListener('click', () => clearAllFilters(tableType))
+    chipsEl.appendChild(clearChip)
+  }
+}
+
+// chip remove click
+document.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('.chip-remove')
+  if (!removeBtn) return
+  applyFilter(removeBtn.dataset.table, removeBtn.dataset.field, '')
+})
+
+// filter popup
+let activeFilterPopup = null
+
+function openFilterPopup(icon) {
+  closeFilterPopup()
+
+  const tableType = icon.dataset.table
+  const field = icon.dataset.field
+  const label = icon.dataset.label
+  const isDropdown = icon.dataset.type === 'dropdown'
+  const currentValue = activeFilters[tableType][field] || ''
+
+  const popup = document.createElement('div')
+  popup.id = 'filterPopup'
+  popup.className = 'filter-popup'
+
+  if (isDropdown) {
+    const positions = ['Junior', 'Middle', 'Senior', 'Lead', 'Architect', 'BO']
+    const options = positions
+      .map(
+        (p) =>
+          `<option value="${p}" ${currentValue === p ? 'selected' : ''}>${p}</option>`,
+      )
+      .join('')
+    popup.innerHTML = `
+      <div class="filter-popup-header"><strong>${label}</strong></div>
+      <select id="filterDropdown" class="inline-select" style="width:100%">
+        <option value="">All</option>
+        ${options}
+      </select>
+    `
+  } else {
+    popup.innerHTML = `
+      <div class="filter-popup-header"><strong>${label}</strong></div>
+      <input type="text" id="filterInput" class="inline-input" placeholder="Filter..." value="${currentValue}" style="width:100%" />
+      <div class="filter-popup-actions">
+        <button class="cancel-btn" id="cancelFilterBtn" style="flex:1;padding:6px">Cancel</button>
+        <button class="submit-btn" id="applyFilterBtn" style="flex:1;padding:6px">Apply</button>
+      </div>
+    `
+  }
+
+  document.body.appendChild(popup)
+  activeFilterPopup = popup
+
+  // position near icon
+  const rect = icon.getBoundingClientRect()
+  const popupW = 200
+  let left = rect.left
+  let top = rect.bottom + 6
+  if (left + popupW > window.innerWidth - 8)
+    left = window.innerWidth - popupW - 8
+  popup.style.cssText = `position:fixed;top:${top}px;left:${left}px;width:${popupW}px;z-index:250`
+
+  if (isDropdown) {
+    const sel = popup.querySelector('#filterDropdown')
+    sel.focus()
+    sel.addEventListener('change', () => {
+      applyFilter(tableType, field, sel.value)
+      closeFilterPopup()
+    })
+  } else {
+    const input = popup.querySelector('#filterInput')
+    input.focus()
+    input.select()
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        applyFilter(tableType, field, input.value.trim())
+        closeFilterPopup()
+      }
+      if (e.key === 'Escape') closeFilterPopup()
+    })
+    popup.querySelector('#applyFilterBtn').addEventListener('click', () => {
+      applyFilter(tableType, field, input.value.trim())
+      closeFilterPopup()
+    })
+    popup
+      .querySelector('#cancelFilterBtn')
+      .addEventListener('click', closeFilterPopup)
+  }
+
+  setTimeout(() => {
+    document.addEventListener('click', filterOutsideHandler)
+  }, 0)
+}
+
+function filterOutsideHandler(e) {
+  const popup = document.getElementById('filterPopup')
+  if (popup && !popup.contains(e.target) && !e.target.closest('.filter-icon')) {
+    closeFilterPopup()
+  }
+}
+
+function closeFilterPopup() {
+  const popup = document.getElementById('filterPopup')
+  if (popup) popup.remove()
+  document.removeEventListener('click', filterOutsideHandler)
+  activeFilterPopup = null
+}
+
+// filter icon click
+document.addEventListener('click', (e) => {
+  const icon = e.target.closest('.filter-icon')
+  if (!icon) return
+  e.stopPropagation()
+  if (activeFilterPopup) {
+    closeFilterPopup()
+    return
+  }
+  openFilterPopup(icon)
+})
+
+// ============================================================
 // SORTING
 // ============================================================
 const sortState = {
@@ -468,11 +656,13 @@ function renderProjects() {
     projectsTbody.innerHTML = `<tr class="empty"><td colspan="7">No projects found</td></tr>`
     updateTotalIncome()
     updateSortIcons('projects')
+    renderFilterChips('projects')
     return
   }
 
   const { field, dir } = sortState.projects
-  const sorted = getSortedArray(period.projects, field, dir)
+  const filtered = getFilteredArray(period.projects, 'projects')
+  const sorted = getSortedArray(filtered, field, dir)
 
   sorted.forEach((p) => {
     const originalIndex = period.projects.indexOf(p)
@@ -515,12 +705,14 @@ function renderEmployees() {
   if (!period || period.employees.length === 0) {
     employeesTbody.innerHTML = `<tr class="empty"><td colspan="9">No employees found</td></tr>`
     updateSortIcons('employees')
+    renderFilterChips('employees')
     return
   }
 
   const positions = ['Junior', 'Middle', 'Senior', 'Lead', 'Architect', 'BO']
   const { field, dir } = sortState.employees
-  const sorted = getSortedArray(period.employees, field, dir)
+  const filtered = getFilteredArray(period.employees, 'employees')
+  const sorted = getSortedArray(filtered, field, dir)
 
   sorted.forEach((e) => {
     const originalIndex = period.employees.indexOf(e)
@@ -1237,7 +1429,9 @@ function closeModal(modal) {
 // ============================================================
 // SEED DATA
 // ============================================================
-document.getElementById('seedDataBtn').addEventListener('click', openSeedDataPopup)
+document
+  .getElementById('seedDataBtn')
+  .addEventListener('click', openSeedDataPopup)
 
 function openSeedDataPopup() {
   const allPeriods = Object.keys(data.monthlyData).filter((key) => {
@@ -1251,22 +1445,24 @@ function openSeedDataPopup() {
     rows = `<tr class="empty"><td colspan="5">No other months with data</td></tr>`
   } else {
     // sort by date descending
-    allPeriods.sort((a, b) => {
-      const [ay, am] = a.split('-').map(Number)
-      const [by, bm] = b.split('-').map(Number)
-      return by !== ay ? by - ay : bm - am
-    }).forEach((key) => {
-      const [year, monthIndex] = key.split('-').map(Number)
-      const period = data.monthlyData[key]
-      const monthName = months[monthIndex]
-
-      // calculate total income for that period
-      let totalProfit = 0
-      period.projects.forEach((p) => {
-        totalProfit += calcProjectFinancials(p, period.employees).profit
+    allPeriods
+      .sort((a, b) => {
+        const [ay, am] = a.split('-').map(Number)
+        const [by, bm] = b.split('-').map(Number)
+        return by !== ay ? by - ay : bm - am
       })
+      .forEach((key) => {
+        const [year, monthIndex] = key.split('-').map(Number)
+        const period = data.monthlyData[key]
+        const monthName = months[monthIndex]
 
-      rows += `
+        // calculate total income for that period
+        let totalProfit = 0
+        period.projects.forEach((p) => {
+          totalProfit += calcProjectFinancials(p, period.employees).profit
+        })
+
+        rows += `
         <tr>
           <td>${monthName} ${year}</td>
           <td>${period.projects.length}</td>
@@ -1277,7 +1473,7 @@ function openSeedDataPopup() {
           </td>
         </tr>
       `
-    })
+      })
   }
 
   const [curYear, curMonthIndex] = currentPeriod.split('-').map(Number)
@@ -1313,7 +1509,12 @@ function openSeedDataPopup() {
     const [curYear, curMonthIndex] = currentPeriod.split('-').map(Number)
     const targetName = `${months[curMonthIndex]} ${curYear}`
 
-    if (!confirm(`Copy data from ${sourceName} to ${targetName}? Current data will be overwritten.`)) return
+    if (
+      !confirm(
+        `Copy data from ${sourceName} to ${targetName}? Current data will be overwritten.`,
+      )
+    )
+      return
 
     // deep copy
     const sourcePeriod = JSON.parse(JSON.stringify(data.monthlyData[sourceKey]))

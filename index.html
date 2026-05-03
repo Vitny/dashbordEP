@@ -53,7 +53,7 @@
             <button class="secondary-btn" id="seedDataBtn">⬇ Seed Data</button>
             <button class="add-btn projects">+ Add Project</button>
           </div>
-
+          <div class="filter-chips" id="projectFilterChips"></div>
           <div class="table-wrapper projects">
             <table>
               <thead>
@@ -66,6 +66,13 @@
                       data-field="companyName"
                       >⇅</span
                     >
+                    <span
+                      class="filter-icon"
+                      data-table="projects"
+                      data-field="companyName"
+                      data-label="Company Name"
+                      >⌕</span
+                    >
                   </th>
                   <th>
                     Project Name
@@ -74,6 +81,13 @@
                       data-table="projects"
                       data-field="projectName"
                       >⇅</span
+                    >
+                    <span
+                      class="filter-icon"
+                      data-table="projects"
+                      data-field="projectName"
+                      data-label="Project Name"
+                      >⌕</span
                     >
                   </th>
                   <th>
@@ -128,78 +142,31 @@
             </h1>
             <button class="add-btn employees">+ Add Employee</button>
           </div>
-
+          <div class="filter-chips" id="employeeFilterChips"></div>
           <div class="table-wrapper employees">
             <table>
               <thead>
-                <tr>
-                  <th>
-                    Name
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="name"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>
-                    Surname
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="surname"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>
-                    Age
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="age"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>
-                    Position
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="position"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>
-                    Salary
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="salary"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>
-                    Est. Payment
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="estimatedPayment"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>Projects</th>
-                  <th>
-                    Projected Income
-                    <span
-                      class="sort-icon"
-                      data-table="employees"
-                      data-field="projectedIncome"
-                      >⇅</span
-                    >
-                  </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+  <tr>
+    <th>Name
+      <span class="sort-icon" data-table="employees" data-field="name">⇅</span>
+      <span class="filter-icon" data-table="employees" data-field="name" data-label="Name">⌕</span>
+    </th>
+    <th>Surname
+      <span class="sort-icon" data-table="employees" data-field="surname">⇅</span>
+      <span class="filter-icon" data-table="employees" data-field="surname" data-label="Surname">⌕</span>
+    </th>
+    <th>Age <span class="sort-icon" data-table="employees" data-field="age">⇅</span></th>
+    <th>Position
+      <span class="sort-icon" data-table="employees" data-field="position">⇅</span>
+      <span class="filter-icon" data-table="employees" data-field="position" data-label="Position" data-type="dropdown">⌕</span>
+    </th>
+    <th>Salary <span class="sort-icon" data-table="employees" data-field="salary">⇅</span></th>
+    <th>Est. Payment <span class="sort-icon" data-table="employees" data-field="estimatedPayment">⇅</span></th>
+    <th>Projects</th>
+    <th>Projected Income <span class="sort-icon" data-table="employees" data-field="projectedIncome">⇅</span></th>
+    <th>Actions</th>
+  </tr>
+</thead>
               <tbody>
                 <tr class="empty">
                   <td colspan="9">No employees found</td>
