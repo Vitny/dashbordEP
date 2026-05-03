@@ -419,7 +419,7 @@ input[type='date']::-webkit-calendar-picker-indicator {
   border: 1px solid #1f2937;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 .assign-popup-header {
@@ -458,7 +458,7 @@ input[type='date']::-webkit-calendar-picker-indicator {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 300;
   display: flex;
   align-items: center;
@@ -523,7 +523,9 @@ input[type='date']::-webkit-calendar-picker-indicator {
   border-bottom: 1px solid #374151;
 }
 
-.unassign-row:last-child { border-bottom: none; }
+.unassign-row:last-child {
+  border-bottom: none;
+}
 
 .unassign-sep {
   height: 1px;
@@ -532,8 +534,12 @@ input[type='date']::-webkit-calendar-picker-indicator {
 }
 
 /* COLORS */
-.positive { color: #22c55e; }
-.negative { color: #ef4444; }
+.positive {
+  color: #22c55e;
+}
+.negative {
+  color: #ef4444;
+}
 
 /* ACTIONS CELL */
 .actions-cell {
@@ -543,11 +549,27 @@ input[type='date']::-webkit-calendar-picker-indicator {
 }
 
 /* RANGE INPUT */
-input[type="range"] {
+input[type='range'] {
   accent-color: #6366f1;
 }
 
 .assign-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* SEEED BUTTON */
+.secondary-btn {
+  background: #1f2937;
+  border: 1px solid #374151;
+  padding: 10px 14px;
+  color: #cbd5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.secondary-btn:hover {
+  background: #374151;
 }

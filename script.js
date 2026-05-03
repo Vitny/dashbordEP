@@ -1235,6 +1235,103 @@ function closeModal(modal) {
 }
 
 // ============================================================
+// SEED DATA
+// ============================================================
+document.getElementById('seedDataBtn').addEventListener('click', openSeedDataPopup)
+
+function openSeedDataPopup() {
+  const allPeriods = Object.keys(data.monthlyData).filter((key) => {
+    if (key === currentPeriod) return false
+    const p = data.monthlyData[key]
+    return p && (p.projects.length > 0 || p.employees.length > 0)
+  })
+
+  let rows = ''
+  if (allPeriods.length === 0) {
+    rows = `<tr class="empty"><td colspan="5">No other months with data</td></tr>`
+  } else {
+    // sort by date descending
+    allPeriods.sort((a, b) => {
+      const [ay, am] = a.split('-').map(Number)
+      const [by, bm] = b.split('-').map(Number)
+      return by !== ay ? by - ay : bm - am
+    }).forEach((key) => {
+      const [year, monthIndex] = key.split('-').map(Number)
+      const period = data.monthlyData[key]
+      const monthName = months[monthIndex]
+
+      // calculate total income for that period
+      let totalProfit = 0
+      period.projects.forEach((p) => {
+        totalProfit += calcProjectFinancials(p, period.employees).profit
+      })
+
+      rows += `
+        <tr>
+          <td>${monthName} ${year}</td>
+          <td>${period.projects.length}</td>
+          <td>${period.employees.length}</td>
+          <td class="${totalProfit >= 0 ? 'positive' : 'negative'}">${fmt(totalProfit)}</td>
+          <td>
+            <button class="action-btn seed-confirm-btn" data-key="${key}">Seed</button>
+          </td>
+        </tr>
+      `
+    })
+  }
+
+  const [curYear, curMonthIndex] = currentPeriod.split('-').map(Number)
+  const currentMonthName = `${months[curMonthIndex]} ${curYear}`
+
+  const modal = createModal(`
+    <h2>Seed Data</h2>
+    <p style="color:#94a3b8;margin-bottom:16px">
+      Copy data from another month into <strong style="color:#cbd5f5">${currentMonthName}</strong>.
+      Vacation days will be cleared.
+    </p>
+    <div class="popup-table-wrap">
+      <table>
+        <thead><tr>
+          <th>Period</th>
+          <th>Projects</th>
+          <th>Employees</th>
+          <th>Est. Income</th>
+          <th>Action</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `)
+
+  modal.querySelector('.popup-content').addEventListener('click', (e) => {
+    const btn = e.target.closest('.seed-confirm-btn')
+    if (!btn) return
+
+    const sourceKey = btn.dataset.key
+    const [srcYear, srcMonthIndex] = sourceKey.split('-').map(Number)
+    const sourceName = `${months[srcMonthIndex]} ${srcYear}`
+    const [curYear, curMonthIndex] = currentPeriod.split('-').map(Number)
+    const targetName = `${months[curMonthIndex]} ${curYear}`
+
+    if (!confirm(`Copy data from ${sourceName} to ${targetName}? Current data will be overwritten.`)) return
+
+    // deep copy
+    const sourcePeriod = JSON.parse(JSON.stringify(data.monthlyData[sourceKey]))
+
+    // clear vacation days from all employees
+    sourcePeriod.employees.forEach((emp) => {
+      emp.vacations = {}
+    })
+
+    data.monthlyData[currentPeriod] = sourcePeriod
+    saveData()
+    closeModal(modal)
+    renderProjects()
+    renderEmployees()
+  })
+}
+
+// ============================================================
 // INITIAL RENDER
 // ============================================================
 renderProjects()
