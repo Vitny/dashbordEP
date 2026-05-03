@@ -50,8 +50,18 @@ const title1 = document.getElementById('date-output-projects')
 const title2 = document.getElementById('date-output-employees')
 
 const months = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 
 const savedPeriod = localStorage.getItem('selectedPeriod')
@@ -199,7 +209,11 @@ function calcProjectFinancials(project, employees) {
     totalRevenue += calcEmployeeRevenue(emp, project, employees)
     totalCost += calcEmployeeCost(emp, project.id)
   })
-  return { revenue: totalRevenue, cost: totalCost, profit: totalRevenue - totalCost }
+  return {
+    revenue: totalRevenue,
+    cost: totalCost,
+    profit: totalRevenue - totalCost,
+  }
 }
 
 function fmt(n) {
@@ -256,7 +270,10 @@ const fields = {
 function checkField(field) {
   const value = field.el.value.trim()
   const error = field.el.nextElementSibling
-  if (!field.validate(value)) { error.textContent = field.msg; return false }
+  if (!field.validate(value)) {
+    error.textContent = field.msg
+    return false
+  }
   error.textContent = ''
   return true
 }
@@ -264,7 +281,10 @@ function checkForm() {
   submitBtn.disabled = !Object.values(fields).every(checkField)
 }
 Object.values(fields).forEach((field) => {
-  field.el.addEventListener('input', () => { checkField(field); checkForm() })
+  field.el.addEventListener('input', () => {
+    checkField(field)
+    checkForm()
+  })
   field.el.addEventListener('blur', () => checkField(field))
 })
 form.addEventListener('submit', (e) => e.preventDefault())
@@ -347,7 +367,10 @@ const empFields = {
 function checkEmpField(field) {
   const value = field.el.value.trim()
   const error = field.el.nextElementSibling
-  if (!field.validate(value)) { error.textContent = field.msg; return false }
+  if (!field.validate(value)) {
+    error.textContent = field.msg
+    return false
+  }
   error.textContent = ''
   return true
 }
@@ -355,7 +378,10 @@ function checkEmpForm() {
   empSubmit.disabled = !Object.values(empFields).every(checkEmpField)
 }
 Object.values(empFields).forEach((field) => {
-  field.el.addEventListener('input', () => { checkEmpField(field); checkEmpForm() })
+  field.el.addEventListener('input', () => {
+    checkEmpField(field)
+    checkEmpForm()
+  })
   field.el.addEventListener('blur', () => checkEmpField(field))
 })
 empForm.addEventListener('submit', (e) => e.preventDefault())
@@ -401,15 +427,17 @@ function getSortedArray(arr, field, dir) {
 
 function updateSortIcons(tableType) {
   const { field, dir } = sortState[tableType]
-  document.querySelectorAll(`.sort-icon[data-table="${tableType}"]`).forEach((icon) => {
-    if (icon.dataset.field === field) {
-      icon.textContent = dir === 1 ? '↑' : '↓'
-      icon.classList.add('sort-active')
-    } else {
-      icon.textContent = '⇅'
-      icon.classList.remove('sort-active')
-    }
-  })
+  document
+    .querySelectorAll(`.sort-icon[data-table="${tableType}"]`)
+    .forEach((icon) => {
+      if (icon.dataset.field === field) {
+        icon.textContent = dir === 1 ? '↑' : '↓'
+        icon.classList.add('sort-active')
+      } else {
+        icon.textContent = '⇅'
+        icon.classList.remove('sort-active')
+      }
+    })
 }
 
 document.addEventListener('click', (e) => {
@@ -419,7 +447,10 @@ document.addEventListener('click', (e) => {
   const field = icon.dataset.field
   const state = sortState[tableType]
   if (state.field === field) state.dir *= -1
-  else { state.field = field; state.dir = 1 }
+  else {
+    state.field = field
+    state.dir = 1
+  }
   if (tableType === 'projects') renderProjects()
   else renderEmployees()
 })
@@ -494,7 +525,10 @@ function renderEmployees() {
   sorted.forEach((e) => {
     const originalIndex = period.employees.indexOf(e)
     const positionOptions = positions
-      .map((pos) => `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`)
+      .map(
+        (pos) =>
+          `<option value="${pos}" ${pos === e.position ? 'selected' : ''}>${pos}</option>`,
+      )
       .join('')
 
     const estimatedPayment = calcEstimatedPayment(e)
@@ -502,8 +536,13 @@ function renderEmployees() {
 
     // assignment count and total capacity
     const existingProjectIds = new Set(period.projects.map((p) => p.id))
-    const activeAssignments = Object.entries(e.assignments || {}).filter(([pid]) => existingProjectIds.has(pid))
-    const totalAssignedCap = activeAssignments.reduce((sum, [, asgn]) => sum + asgn.capacity, 0)
+    const activeAssignments = Object.entries(e.assignments || {}).filter(
+      ([pid]) => existingProjectIds.has(pid),
+    )
+    const totalAssignedCap = activeAssignments.reduce(
+      (sum, [, asgn]) => sum + asgn.capacity,
+      0,
+    )
     const assignCount = activeAssignments.length
     const canAssign = totalAssignedCap < 1.5
 
@@ -551,7 +590,10 @@ function updateTotalIncome() {
   const totalEl = document.querySelector('.total .money')
   if (!totalEl) return
   const period = data.monthlyData[currentPeriod]
-  if (!period) { totalEl.textContent = '$0.00'; return }
+  if (!period) {
+    totalEl.textContent = '$0.00'
+    return
+  }
   const total = period.projects.reduce((sum, p) => {
     return sum + calcProjectFinancials(p, period.employees).profit
   }, 0)
@@ -562,92 +604,99 @@ function updateTotalIncome() {
 // ============================================================
 // DELETE (projects table)
 // ============================================================
-document.querySelector('.table-wrapper.projects').addEventListener('click', (e) => {
-  if (e.target.closest('.delete-btn')) {
-    const btn = e.target.closest('.delete-btn')
-    if (btn.dataset.type !== 'project') return
-    const index = Number(btn.dataset.index)
-    const projectId = data.monthlyData[currentPeriod].projects[index].id
-    // unassign all employees from this project
-    data.monthlyData[currentPeriod].employees.forEach((emp) => {
-      if (emp.assignments?.[projectId]) delete emp.assignments[projectId]
-    })
-    data.monthlyData[currentPeriod].projects.splice(index, 1)
-    saveData()
-    renderProjects()
-    renderEmployees()
-    return
-  }
+document
+  .querySelector('.table-wrapper.projects')
+  .addEventListener('click', (e) => {
+    if (e.target.closest('.delete-btn')) {
+      const btn = e.target.closest('.delete-btn')
+      if (btn.dataset.type !== 'project') return
+      const index = Number(btn.dataset.index)
+      const projectId = data.monthlyData[currentPeriod].projects[index].id
+      // unassign all employees from this project
+      data.monthlyData[currentPeriod].employees.forEach((emp) => {
+        if (emp.assignments?.[projectId]) delete emp.assignments[projectId]
+      })
+      data.monthlyData[currentPeriod].projects.splice(index, 1)
+      saveData()
+      renderProjects()
+      renderEmployees()
+      return
+    }
 
-  if (e.target.closest('.show-employees-btn')) {
-    const btn = e.target.closest('.show-employees-btn')
-    openShowEmployeesPopup(btn.dataset.projectId)
-  }
-})
+    if (e.target.closest('.show-employees-btn')) {
+      const btn = e.target.closest('.show-employees-btn')
+      openShowEmployeesPopup(btn.dataset.projectId)
+    }
+  })
 
 // ============================================================
 // DELETE + INLINE EDIT + ASSIGN (employees table)
 // ============================================================
-document.querySelector('.table-wrapper.employees').addEventListener('click', (e) => {
-  // delete
-  if (e.target.closest('.delete-btn')) {
-    const btn = e.target.closest('.delete-btn')
-    if (btn.dataset.type !== 'employee') return
-    const index = Number(btn.dataset.index)
-    data.monthlyData[currentPeriod].employees.splice(index, 1)
-    saveData()
-    renderEmployees()
-    renderProjects()
-    return
-  }
-
-  // assign button
-  if (e.target.closest('.assign-btn')) {
-    const btn = e.target.closest('.assign-btn')
-    openAssignPopup(btn.dataset.employeeId, btn)
-    return
-  }
-
-  // show Assignments
-  if (e.target.closest('.show-assignments-btn')) {
-    const btn = e.target.closest('.show-assignments-btn')
-    openShowAssignmentsPopup(btn.dataset.employeeId)
-    return
-  }
-
-  // inline edit open
-  const cell = e.target.closest('.editable-cell')
-  if (cell && !e.target.closest('.cell-edit')) {
-    const cellView = cell.querySelector('.cell-view')
-    const cellEdit = cell.querySelector('.cell-edit')
-    cellView.classList.add('hidden')
-    cellEdit.classList.remove('hidden')
-    const input = cellEdit.querySelector('input, select')
-    if (input) input.focus()
-    return
-  }
-
-  // inline edit OK
-  if (e.target.closest('.ok-btn')) {
-    const cell = e.target.closest('.editable-cell')
-    const index = Number(cell.dataset.index)
-    const field = cell.dataset.field
-    const input = cell.querySelector('input, select')
-    const value = input.value.trim()
-
-    if (field === 'salary') {
-      const num = Number(value)
-      if (!value || isNaN(num) || num <= 0) { input.style.borderColor = '#ef4444'; return }
-      input.style.borderColor = ''
-      data.monthlyData[currentPeriod].employees[index].salary = num
-    } else if (field === 'position') {
-      data.monthlyData[currentPeriod].employees[index].position = value
+document
+  .querySelector('.table-wrapper.employees')
+  .addEventListener('click', (e) => {
+    // delete
+    if (e.target.closest('.delete-btn')) {
+      const btn = e.target.closest('.delete-btn')
+      if (btn.dataset.type !== 'employee') return
+      const index = Number(btn.dataset.index)
+      data.monthlyData[currentPeriod].employees.splice(index, 1)
+      saveData()
+      renderEmployees()
+      renderProjects()
+      return
     }
-    saveData()
-    renderEmployees()
-    renderProjects()
-  }
-})
+
+    // assign button
+    if (e.target.closest('.assign-btn')) {
+      const btn = e.target.closest('.assign-btn')
+      openAssignPopup(btn.dataset.employeeId, btn)
+      return
+    }
+
+    // show Assignments
+    if (e.target.closest('.show-assignments-btn')) {
+      const btn = e.target.closest('.show-assignments-btn')
+      openShowAssignmentsPopup(btn.dataset.employeeId)
+      return
+    }
+
+    // inline edit open
+    const cell = e.target.closest('.editable-cell')
+    if (cell && !e.target.closest('.cell-edit')) {
+      const cellView = cell.querySelector('.cell-view')
+      const cellEdit = cell.querySelector('.cell-edit')
+      cellView.classList.add('hidden')
+      cellEdit.classList.remove('hidden')
+      const input = cellEdit.querySelector('input, select')
+      if (input) input.focus()
+      return
+    }
+
+    // inline edit OK
+    if (e.target.closest('.ok-btn')) {
+      const cell = e.target.closest('.editable-cell')
+      const index = Number(cell.dataset.index)
+      const field = cell.dataset.field
+      const input = cell.querySelector('input, select')
+      const value = input.value.trim()
+
+      if (field === 'salary') {
+        const num = Number(value)
+        if (!value || isNaN(num) || num <= 0) {
+          input.style.borderColor = '#ef4444'
+          return
+        }
+        input.style.borderColor = ''
+        data.monthlyData[currentPeriod].employees[index].salary = num
+      } else if (field === 'position') {
+        data.monthlyData[currentPeriod].employees[index].position = value
+      }
+      saveData()
+      renderEmployees()
+      renderProjects()
+    }
+  })
 
 // ============================================================
 // ASSIGN POPUP
@@ -666,7 +715,9 @@ function openAssignPopup(employeeId, triggerBtn) {
 
   // filter projects that this employee is not already assigned to
   const existingProjectIds = new Set(Object.keys(employee.assignments || {}))
-  const availableProjects = period.projects.filter((p) => !existingProjectIds.has(p.id))
+  const availableProjects = period.projects.filter(
+    (p) => !existingProjectIds.has(p.id),
+  )
 
   const totalAssignedCap = Object.entries(employee.assignments || {})
     .filter(([pid]) => period.projects.find((p) => p.id === pid))
@@ -678,12 +729,15 @@ function openAssignPopup(employeeId, triggerBtn) {
   popup.id = 'assignPopup'
   popup.className = 'assign-popup'
 
-  const projectOptions = availableProjects.length === 0
-    ? `<option value="">No available projects</option>`
-    : availableProjects.map((p) => {
-        const used = calcProjectUsedCapacity(p.id, period.employees)
-        return `<option value="${p.id}">${p.projectName} (${used.toFixed(1)}/${p.capacity})</option>`
-      }).join('')
+  const projectOptions =
+    availableProjects.length === 0
+      ? `<option value="">No available projects</option>`
+      : availableProjects
+          .map((p) => {
+            const used = calcProjectUsedCapacity(p.id, period.employees)
+            return `<option value="${p.id}">${p.projectName} (${used.toFixed(1)}/${p.capacity})</option>`
+          })
+          .join('')
 
   popup.innerHTML = `
     <div class="assign-popup-header">
@@ -738,10 +792,10 @@ function openAssignPopup(employeeId, triggerBtn) {
       warnEl.textContent = '⚠ Employee capacity limit (1.5) will be exceeded'
       confirmBtn.disabled = true
     } else if (project) {
-      const usedCap = calcProjectUsedCapacity(project.id, period.employees)
-      if (usedCap + cap > project.capacity) {
-        warnEl.textContent = `⚠ Project capacity (${project.capacity}) will be exceeded (${(usedCap + cap).toFixed(1)})`
-        confirmBtn.disabled = false // warn but allow
+      const usedEffCap = calcProjectUsedEffCapacity(project, period.employees)
+      if (usedEffCap + effCap > project.capacity) {
+        warnEl.textContent = `⚠ Project capacity (${project.capacity}) will be exceeded (${(usedEffCap + effCap).toFixed(2)})`
+        confirmBtn.disabled = false
       } else {
         warnEl.textContent = ''
         confirmBtn.disabled = false
@@ -751,9 +805,15 @@ function openAssignPopup(employeeId, triggerBtn) {
     }
   }
 
-  document.getElementById('assignCapSlider').addEventListener('input', updateAssignCalc)
-  document.getElementById('assignFitSlider').addEventListener('input', updateAssignCalc)
-  document.getElementById('assignProjectSelect').addEventListener('change', updateAssignCalc)
+  document
+    .getElementById('assignCapSlider')
+    .addEventListener('input', updateAssignCalc)
+  document
+    .getElementById('assignFitSlider')
+    .addEventListener('input', updateAssignCalc)
+  document
+    .getElementById('assignProjectSelect')
+    .addEventListener('change', updateAssignCalc)
   updateAssignCalc()
 
   document.getElementById('closeAssignPopup').onclick = closeAssignPopup
@@ -793,8 +853,10 @@ function assignOutsideHandler(e) {
 function closeAssignPopup() {
   const popup = document.getElementById('assignPopup')
   if (popup) popup.remove()
-  if (assignPopupScrollHandler) window.removeEventListener('scroll', assignPopupScrollHandler, true)
-  if (assignPopupResizeHandler) window.removeEventListener('resize', assignPopupResizeHandler)
+  if (assignPopupScrollHandler)
+    window.removeEventListener('scroll', assignPopupScrollHandler, true)
+  if (assignPopupResizeHandler)
+    window.removeEventListener('resize', assignPopupResizeHandler)
   document.removeEventListener('click', assignOutsideHandler)
 }
 
@@ -807,9 +869,11 @@ function positionPopup(popup, triggerBtn) {
   let top = rect.bottom + margin
   let left = rect.left
 
-  if (left + popupW > window.innerWidth - margin) left = window.innerWidth - popupW - margin
+  if (left + popupW > window.innerWidth - margin)
+    left = window.innerWidth - popupW - margin
   if (left < margin) left = margin
-  if (top + popupH > window.innerHeight - margin) top = rect.top - popupH - margin
+  if (top + popupH > window.innerHeight - margin)
+    top = rect.top - popupH - margin
   if (top < margin) top = margin
 
   popup.style.position = 'fixed'
@@ -829,7 +893,9 @@ function openShowAssignmentsPopup(employeeId) {
   if (!employee) return
 
   const existingProjectIds = new Set(period.projects.map((p) => p.id))
-  const activeAssignments = Object.entries(employee.assignments || {}).filter(([pid]) => existingProjectIds.has(pid))
+  const activeAssignments = Object.entries(employee.assignments || {}).filter(
+    ([pid]) => existingProjectIds.has(pid),
+  )
 
   let rows = ''
   if (activeAssignments.length === 0) {
@@ -881,12 +947,19 @@ function openShowAssignmentsPopup(employeeId) {
     if (e.target.closest('.edit-assign-btn')) {
       const btn = e.target.closest('.edit-assign-btn')
       closeModal(modal)
-      openEditAssignPopup(btn.dataset.employeeId, btn.dataset.projectId, null, () => openShowAssignmentsPopup(employeeId))
+      openEditAssignPopup(
+        btn.dataset.employeeId,
+        btn.dataset.projectId,
+        null,
+        () => openShowAssignmentsPopup(employeeId),
+      )
     }
     if (e.target.closest('.unassign-btn')) {
       const btn = e.target.closest('.unassign-btn')
       closeModal(modal)
-      openUnassignPopup(btn.dataset.employeeId, btn.dataset.projectId, () => openShowAssignmentsPopup(employeeId))
+      openUnassignPopup(btn.dataset.employeeId, btn.dataset.projectId, () =>
+        openShowAssignmentsPopup(employeeId),
+      )
     }
   })
 }
@@ -934,7 +1007,10 @@ function openShowEmployeesPopup(projectId) {
     })
   }
 
-  const { revenue, cost, profit } = calcProjectFinancials(project, period.employees)
+  const { revenue, cost, profit } = calcProjectFinancials(
+    project,
+    period.employees,
+  )
 
   const modal = createModal(`
     <h2>${project.projectName} — Employees</h2>
@@ -958,12 +1034,19 @@ function openShowEmployeesPopup(projectId) {
     if (e.target.closest('.edit-assign-btn')) {
       const btn = e.target.closest('.edit-assign-btn')
       closeModal(modal)
-      openEditAssignPopup(btn.dataset.employeeId, btn.dataset.projectId, null, () => openShowEmployeesPopup(projectId))
+      openEditAssignPopup(
+        btn.dataset.employeeId,
+        btn.dataset.projectId,
+        null,
+        () => openShowEmployeesPopup(projectId),
+      )
     }
     if (e.target.closest('.unassign-btn')) {
       const btn = e.target.closest('.unassign-btn')
       closeModal(modal)
-      openUnassignPopup(btn.dataset.employeeId, btn.dataset.projectId, () => openShowEmployeesPopup(projectId))
+      openUnassignPopup(btn.dataset.employeeId, btn.dataset.projectId, () =>
+        openShowEmployeesPopup(projectId),
+      )
     }
   })
 }
@@ -979,7 +1062,9 @@ function openEditAssignPopup(employeeId, projectId, triggerBtn, onClose) {
 
   const asgn = employee.assignments[projectId]
   const otherCap = Object.entries(employee.assignments)
-    .filter(([pid]) => pid !== projectId && period.projects.find((p) => p.id === pid))
+    .filter(
+      ([pid]) => pid !== projectId && period.projects.find((p) => p.id === pid),
+    )
     .reduce((sum, [, a]) => sum + a.capacity, 0)
 
   const modal = createModal(`
@@ -1021,11 +1106,18 @@ function openEditAssignPopup(employeeId, projectId, triggerBtn, onClose) {
     }
   }
 
-  modal.querySelector('#editCapSlider').addEventListener('input', updateEditCalc)
-  modal.querySelector('#editFitSlider').addEventListener('input', updateEditCalc)
+  modal
+    .querySelector('#editCapSlider')
+    .addEventListener('input', updateEditCalc)
+  modal
+    .querySelector('#editFitSlider')
+    .addEventListener('input', updateEditCalc)
   updateEditCalc()
 
-  modal.querySelector('#cancelEditBtn').onclick = () => { closeModal(modal); if (onClose) onClose() }
+  modal.querySelector('#cancelEditBtn').onclick = () => {
+    closeModal(modal)
+    if (onClose) onClose()
+  }
   modal.querySelector('#confirmEditBtn').onclick = () => {
     const cap = Number(modal.querySelector('#editCapSlider').value)
     const fit = Number(modal.querySelector('#editFitSlider').value)
@@ -1053,14 +1145,22 @@ function openUnassignPopup(employeeId, projectId, onClose) {
   const cost = calcEmployeeCost(employee, projectId)
   const profit = rev - cost
 
-  const { profit: projProfit } = calcProjectFinancials(project, period.employees)
+  const { profit: projProfit } = calcProjectFinancials(
+    project,
+    period.employees,
+  )
   const usedCap = calcProjectUsedCapacity(projectId, period.employees)
 
   // simulate after unassign
   const tempEmployee = { ...employee, assignments: { ...employee.assignments } }
   delete tempEmployee.assignments[projectId]
-  const tempEmployees = period.employees.map((e) => e.id === employeeId ? tempEmployee : e)
-  const { profit: projProfitAfter } = calcProjectFinancials(project, tempEmployees)
+  const tempEmployees = period.employees.map((e) =>
+    e.id === employeeId ? tempEmployee : e,
+  )
+  const { profit: projProfitAfter } = calcProjectFinancials(
+    project,
+    tempEmployees,
+  )
   const usedCapAfter = usedCap - asgn.capacity
 
   const modal = createModal(`
@@ -1087,7 +1187,10 @@ function openUnassignPopup(employeeId, projectId, onClose) {
     </div>
   `)
 
-  modal.querySelector('#cancelUnassignBtn').onclick = () => { closeModal(modal); if (onClose) onClose() }
+  modal.querySelector('#cancelUnassignBtn').onclick = () => {
+    closeModal(modal)
+    if (onClose) onClose()
+  }
   modal.querySelector('#confirmUnassignBtn').onclick = () => {
     delete employee.assignments[projectId]
     saveData()
