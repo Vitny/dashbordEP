@@ -412,3 +412,142 @@ input[type='date']::-webkit-calendar-picker-indicator {
 .sort-icon.sort-active {
   color: #6366f1;
 }
+
+/* ASSIGN POPUP */
+.assign-popup {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.assign-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.assign-popup-info {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  background: #1f2937;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.assign-popup-calc {
+  font-size: 12px;
+  color: #94a3b8;
+  background: #1f2937;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.assign-popup-warning {
+  font-size: 12px;
+  color: #f59e0b;
+  min-height: 18px;
+  margin-top: 6px;
+}
+
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 24px;
+  min-width: 540px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.popup-table-wrap {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+}
+
+.popup-table-wrap table {
+  min-width: 600px;
+}
+
+.popup-totals {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+  background: #1f2937;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+/* UNASSIGN DETAILS */
+.unassign-details {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.unassign-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #374151;
+}
+
+.unassign-row:last-child { border-bottom: none; }
+
+.unassign-sep {
+  height: 1px;
+  background: #4b5563;
+  margin: 6px 0;
+}
+
+/* COLORS */
+.positive { color: #22c55e; }
+.negative { color: #ef4444; }
+
+/* ACTIONS CELL */
+.actions-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* RANGE INPUT */
+input[type="range"] {
+  accent-color: #6366f1;
+}
+
+.assign-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
