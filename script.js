@@ -400,7 +400,6 @@ document.getElementById('employeeForm').addEventListener('submit', (e) => {
     position: document.getElementById('empPosition').value,
     salary: Number(document.getElementById('empSalary').value),
     assignments: {},
-    vacations: {},
   }
   data.monthlyData[currentPeriod].employees.push(newEmployee)
   saveData()
@@ -1483,7 +1482,6 @@ function openSeedDataPopup() {
     <h2>Seed Data</h2>
     <p style="color:#94a3b8;margin-bottom:16px">
       Copy data from another month into <strong style="color:#cbd5f5">${currentMonthName}</strong>.
-      Vacation days will be cleared.
     </p>
     <div class="popup-table-wrap">
       <table>
@@ -1518,11 +1516,6 @@ function openSeedDataPopup() {
 
     // deep copy
     const sourcePeriod = JSON.parse(JSON.stringify(data.monthlyData[sourceKey]))
-
-    // clear vacation days from all employees
-    sourcePeriod.employees.forEach((emp) => {
-      emp.vacations = {}
-    })
 
     data.monthlyData[currentPeriod] = sourcePeriod
     saveData()

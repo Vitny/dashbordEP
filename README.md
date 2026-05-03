@@ -1,4 +1,4 @@
-# Employee & Project Dashboard
+# DashboardEP ®
 
 A single-page management application for tracking employees, projects, and their assignments across different time periods. Built with vanilla HTML, CSS, and JavaScript — no frameworks, no dependencies.
 
